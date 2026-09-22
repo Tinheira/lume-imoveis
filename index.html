@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Lume Imóveis — Conheça o imóvel por dentro, em 360°</title>
+    <meta
+      name="description"
+      content="Casas e apartamentos para comprar ou alugar, com tour virtual em 360°. Entre no imóvel pelo navegador antes de agendar a visita."
+    />
+    <meta name="theme-color" content="#1f3b33" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preload" as="image" href="/img/hero-poster.webp" imagesrcset="/img/hero-poster-960.webp 960w, /img/hero-poster.webp 1920w" imagesizes="100vw" fetchpriority="high" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:title" content="Lume Imóveis — Conheça o imóvel por dentro" />
+    <meta property="og:description" content="Tour virtual em 360° de casas e apartamentos para comprar ou alugar." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "RealEstateAgent",
+        "name": "Lume Imóveis",
+        "description": "Casas e apartamentos para comprar ou alugar, com tour virtual em 360°."
+      }
+    </script>
+  </head>
+  <body>
+    <a class="skip" href="#imoveis">Ir para os imóveis</a>
+
+    <div class="loader" id="loader" role="dialog" aria-modal="true" aria-labelledby="loader-title">
+      <div class="loader__inner">
+        <p class="loader__brand" id="loader-title" data-agency="name">Lume Imóveis</p>
+        <p class="loader__tag">Conheça por dentro antes de visitar.</p>
+        <div class="loader__bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Carregando o bairro"><span id="loader-fill"></span></div>
+        <p class="loader__status" id="loader-status" aria-live="polite">Preparando o bairro…</p>
+        <div class="loader__actions">
+          <button class="btn btn--clay" type="button" id="loader-enter" hidden>Entrar no bairro <span aria-hidden="true">→</span></button>
+          <button class="link-btn" type="button" id="loader-skip">Ver o site</button>
+        </div>
+      </div>
+    </div>
+
+    <header class="header" id="topo">
+      <a class="brand" href="#inicio" aria-label="Lume Imóveis — início">
+        <svg class="brand__mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+          <path d="M4 15 16 5l12 10v12H4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          <circle cx="16" cy="19" r="3.2" fill="currentColor" />
+        </svg>
+        <span data-agency="name">Lume Imóveis</span>
+      </a>
+      <nav class="nav" id="nav" aria-label="Principal">
+        <ul>
+          <li><a class="link" href="#imoveis">Imóveis</a></li>
+          <li><a class="link" href="#tour">Tour 360°</a></li>
+          <li><a class="link" href="#como-funciona">Como funciona</a></li>
+          <li><a class="link" href="#sobre">Sobre</a></li>
+        </ul>
+        <a class="btn btn--clay btn--sm" href="#contato">Anuncie seu imóvel</a>
+      </nav>
+      <button class="burger" type="button" id="menu-toggle" aria-expanded="false" aria-controls="nav" aria-label="Abrir menu">
+        <span></span><span></span>
+      </button>
+    </header>
+
+    <main>
+      <!-- HERO -->
+      <section class="hero" id="inicio" aria-labelledby="hero-title">
+        <div class="stage" id="stage">
+          <img class="stage__poster" src="/img/hero-poster.webp" srcset="/img/hero-poster-960.webp 960w, /img/hero-poster.webp 1920w" sizes="100vw" alt="" width="1920" height="1080" fetchpriority="high" />
+          <div class="stage__canvas" id="stage-canvas"></div>
+          <div class="hotspots" id="hotspots"></div>
+
+          <div class="hud" id="hud" hidden>
+            <button class="pill-btn hud__exit" type="button" id="hud-exit"><span aria-hidden="true">←</span> Sair do bairro</button>
+            <button class="pill-btn pill-btn--ghost hud__list" type="button" id="hud-list">Ver lista de imóveis</button>
+            <p class="hud__hint" id="hud-hint" role="status"></p>
+            <div class="hud__bottom">
+              <p class="hud__caption" id="hud-caption" aria-live="polite"></p>
+              <div class="hud__road" id="hud-road" role="group" aria-label="Mapa da rua"><span class="hud__road-line"></span><i class="hud__road-mark" id="road-mark" aria-hidden="true"></i></div>
+              <div class="hud__nav">
+                <button class="hud__arrow" type="button" id="hud-prev" aria-label="Imóvel anterior">←</button>
+                <ul class="hud__chips" id="hud-chips" aria-label="Imóveis do bairro"></ul>
+                <button class="hud__arrow" type="button" id="hud-next" aria-label="Próximo imóvel">→</button>
+              </div>
+            </div>
+          </div>
+
+          <aside class="panel" id="panel" role="region" aria-labelledby="panel-title" hidden></aside>
+        </div>
+
+        <div class="hero__inner wrap">
+          <p class="eyebrow">Um bairro para explorar em 3D</p>
+          <h1 id="hero-title">Passeie pelo bairro e entre na sua próxima casa <em>antes</em> de visitar.</h1>
+          <p class="hero__lead">
+            Ande pela rua, pare em frente a cada casa ou apartamento, abra a porta e caminhe cômodo por cômodo. Só agende a visita quando tiver certeza.
+          </p>
+          <div class="hero__actions">
+            <button class="btn btn--clay" type="button" data-enter>Passear pelo bairro <span aria-hidden="true">→</span></button>
+            <a class="btn btn--glass" href="#imoveis">Ver lista de imóveis</a>
+          </div>
+          <p class="hero__scroll" aria-hidden="true">Arraste para olhar em volta</p>
+        </div>
+      </section>
+
+      <!-- IMÓVEIS -->
+      <section class="section" id="imoveis" aria-labelledby="imoveis-title">
+        <div class="wrap">
+          <div class="section__head">
+            <p class="eyebrow eyebrow--dark">Imóveis</p>
+            <h2 id="imoveis-title">Casas e apartamentos em destaque</h2>
+            <p class="demo" id="demo-note">
+              Imóveis de demonstração: nomes, valores e imagens são ilustrativos.
+            </p>
+          </div>
+
+          <div class="filters" role="group" aria-label="Filtros">
+            <div class="chips" role="radiogroup" aria-label="Finalidade">
+              <button type="button" class="chip is-on" data-filter="purpose" data-value="" aria-pressed="true">Todos</button>
+              <button type="button" class="chip" data-filter="purpose" data-value="venda" aria-pressed="false">Comprar</button>
+              <button type="button" class="chip" data-filter="purpose" data-value="aluguel" aria-pressed="false">Alugar</button>
+            </div>
+            <div class="chips" role="radiogroup" aria-label="Tipo">
+              <button type="button" class="chip is-on" data-filter="kind" data-value="" aria-pressed="true">Todos os tipos</button>
+              <button type="button" class="chip" data-filter="kind" data-value="casa" aria-pressed="false">Casas</button>
+              <button type="button" class="chip" data-filter="kind" data-value="apartamento" aria-pressed="false">Apartamentos</button>
+              <button type="button" class="chip chip--tour" data-filter="tour" data-value="1" aria-pressed="false">Com tour 360°</button>
+            </div>
+            <div class="filters__sort">
+              <label for="sort">Ordenar</label>
+              <select id="sort">
+                <option value="destaque">Destaques</option>
+                <option value="menor">Menor preço</option>
+                <option value="maior">Maior preço</option>
+              </select>
+            </div>
+          </div>
+          <p class="results" id="results" role="status" aria-live="polite"></p>
+          <ul class="grid" id="grid"></ul>
+          <div class="empty" id="empty" hidden>
+            <p>Nenhum imóvel encontrado com esses filtros.</p>
+            <button class="btn btn--forest btn--sm" type="button" id="clear-filters">Limpar filtros</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- TOUR -->
+      <section class="section section--forest" id="tour" aria-labelledby="tour-title">
+        <div class="wrap tourpromo">
+          <div class="tourpromo__text">
+            <p class="eyebrow">Tour virtual 360°</p>
+            <h2 id="tour-title">Visite por dentro, de qualquer lugar</h2>
+            <p class="lead">
+              Panoramas em 360° permitem olhar para todos os lados, aproximar detalhes e passar de um cômodo para outro como numa visita de verdade.
+            </p>
+            <ol class="steps">
+              <li><span><strong>Escolha um imóvel</strong> com o selo “Tour 360°”.</span></li>
+              <li><span><strong>Arraste</strong> para olhar em volta e use a roda ou a pinça para aproximar.</span></li>
+              <li><span><strong>Troque de cômodo</strong> pelas miniaturas e agende a visita presencial.</span></li>
+            </ol>
+            <button class="btn btn--clay" type="button" id="tour-featured">Experimentar agora <span aria-hidden="true">→</span></button>
+          </div>
+          <button class="tourpromo__card" type="button" id="tour-featured-card" aria-label="Abrir o tour virtual de exemplo">
+            <img src="/pano/glasshouse_interior-thumb.webp" alt="" width="640" height="400" loading="lazy" decoding="async" />
+            <span class="tourpromo__badge"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6" /><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18" fill="none" stroke="currentColor" stroke-width="1.4" /></svg>360°</span>
+            <span class="tourpromo__play">Entrar no imóvel</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- COMO FUNCIONA -->
+      <section class="section" id="como-funciona" aria-labelledby="como-title">
+        <div class="wrap">
+          <div class="section__head">
+            <p class="eyebrow eyebrow--dark">Como funciona</p>
+            <h2 id="como-title">Do primeiro olhar à chave na mão</h2>
+          </div>
+          <ol class="how">
+            <li class="how__item">
+              <span class="how__n" aria-hidden="true">01</span>
+              <h3>Encontre</h3>
+              <p>Filtre por finalidade, tipo e bairro e veja fotos e o tour 360° dos imóveis que combinam com você.</p>
+            </li>
+            <li class="how__item">
+              <span class="how__n" aria-hidden="true">02</span>
+              <h3>Visite</h3>
+              <p>Depois de conhecer por dentro, agende a visita presencial só dos que valem a pena.</p>
+            </li>
+            <li class="how__item">
+              <span class="how__n" aria-hidden="true">03</span>
+              <h3>Feche negócio</h3>
+              <p>Acompanhamos a documentação e a negociação, para comprar ou alugar com segurança.</p>
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      <!-- SOBRE -->
+      <section class="section section--sand" id="sobre" aria-labelledby="sobre-title">
+        <div class="wrap about">
+          <div>
+            <p class="eyebrow eyebrow--dark">Sobre nós</p>
+            <h2 id="sobre-title">Tecnologia para decidir com calma</h2>
+          </div>
+          <div class="about__text">
+            <p class="lead">
+              Acreditamos que escolher um lar não deveria depender de agendas apertadas e deslocamentos desnecessários. Por isso, unimos atendimento próximo a um tour virtual completo de cada imóvel.
+            </p>
+            <p class="placeholder">[TEXTO INSTITUCIONAL A DEFINIR: história, equipe, região de atuação e diferenciais reais da imobiliária]</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- CONTATO -->
+      <section class="section section--forest" id="contato" aria-labelledby="contato-title">
+        <div class="wrap contact">
+          <div>
+            <p class="eyebrow">Contato</p>
+            <h2 id="contato-title">Vamos conversar?</h2>
+            <p class="lead">Quer visitar um imóvel, tirar dúvidas ou anunciar o seu? Deixe uma mensagem e retornamos.</p>
+            <ul class="contact__list" id="contact-list"></ul>
+          </div>
+          <form class="form" id="formulario" novalidate aria-labelledby="form-title">
+            <h3 id="form-title">Envie uma mensagem</h3>
+            <div class="field">
+              <label for="f-nome">Nome <span aria-hidden="true">*</span></label>
+              <input id="f-nome" name="nome" type="text" autocomplete="name" required maxlength="120" />
+              <p class="field__error" id="f-nome-err" hidden></p>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label for="f-telefone">Telefone</label>
+                <input id="f-telefone" name="telefone" type="tel" autocomplete="tel" inputmode="tel" maxlength="30" />
+                <p class="field__error" id="f-telefone-err" hidden></p>
+              </div>
+              <div class="field">
+                <label for="f-email">E-mail</label>
+                <input id="f-email" name="email" type="email" autocomplete="email" maxlength="160" />
+                <p class="field__error" id="f-email-err" hidden></p>
+              </div>
+            </div>
+            <div class="field">
+              <label for="f-interesse">Interesse</label>
+              <select id="f-interesse" name="interesse">
+                <option>Comprar um imóvel</option>
+                <option>Alugar um imóvel</option>
+                <option>Anunciar meu imóvel</option>
+                <option>Outro assunto</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="f-mensagem">Mensagem <span aria-hidden="true">*</span></label>
+              <textarea id="f-mensagem" name="mensagem" rows="4" required maxlength="2000"></textarea>
+              <p class="field__error" id="f-mensagem-err" hidden></p>
+            </div>
+            <div class="hp" aria-hidden="true">
+              <label for="f-site">Site</label>
+              <input id="f-site" name="site" type="text" tabindex="-1" autocomplete="off" />
+            </div>
+            <p class="form__hint">Informe telefone ou e-mail para retorno. Campos com * são obrigatórios.</p>
+            <button class="btn btn--clay" type="submit" id="form-submit"><span class="btn__label">Enviar mensagem</span></button>
+            <p class="form__status" id="form-status" role="status" aria-live="polite" tabindex="-1"></p>
+          </form>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="wrap footer__grid">
+        <div>
+          <p class="footer__brand" data-agency="name">Lume Imóveis</p>
+          <p class="footer__creci" data-agency="creci">[CRECI A DEFINIR]</p>
+        </div>
+        <nav aria-label="Rodapé">
+          <ul>
+            <li><a class="link" href="#imoveis">Imóveis</a></li>
+            <li><a class="link" href="#tour">Tour 360°</a></li>
+            <li><a class="link" href="#como-funciona">Como funciona</a></li>
+            <li><a class="link" href="#contato">Contato</a></li>
+          </ul>
+        </nav>
+        <p class="footer__credits">
+          Imagens ilustrativas: capas do <a class="link" href="https://unsplash.com" rel="noopener noreferrer">Unsplash</a> e panoramas 360° do
+          <a class="link" href="https://polyhaven.com" rel="noopener noreferrer">Poly Haven</a> (CC0).
+        </p>
+      </div>
+      <p class="footer__legal">© <span data-agency="name">Lume Imóveis</span>. Todos os direitos reservados.</p>
+    </footer>
+
+    <!-- DETALHE DO IMÓVEL -->
+    <dialog class="detail" id="detail" aria-labelledby="detail-title">
+      <div class="detail__scroll" id="detail-scroll">
+        <div class="detail__bar">
+          <button class="pill-btn" type="button" id="detail-back"><span aria-hidden="true">←</span> Voltar aos imóveis</button>
+          <button class="pill-btn pill-btn--ghost" type="button" id="detail-home"><span aria-hidden="true">⌂</span> Início</button>
+        </div>
+        <div id="detail-body"></div>
+      </div>
+    </dialog>
+
+    <!-- TOUR 360° -->
+    <dialog class="tour" id="tour-dialog" aria-labelledby="tour-heading">
+      <div class="tour__stage" id="tour-stage">
+        <div class="tour__flat" id="tour-flat" hidden></div>
+        <div class="tour__loading" id="tour-loading" role="status"><span class="spinner" aria-hidden="true"></span><span id="tour-loading-text">Carregando o cômodo…</span></div>
+      </div>
+      <div class="tour__top">
+        <div>
+          <p class="tour__prop" id="tour-heading"></p>
+          <p class="tour__room" id="tour-room" aria-live="polite"></p>
+          <p class="tour__progress" id="tour-progress"></p>
+        </div>
+        <div class="tour__actions">
+          <button class="pill-btn" type="button" id="tour-close"><span aria-hidden="true">←</span> Voltar ao imóvel</button>
+          <button class="pill-btn pill-btn--ghost" type="button" id="tour-home"><span aria-hidden="true">⌂</span> Início</button>
+        </div>
+      </div>
+      <div class="walk" id="tour-walk">
+        <button class="walk__arrow walk__arrow--next" type="button" id="walk-next" hidden><span class="walk__ring" aria-hidden="true"></span><span class="walk__label" id="walk-next-label">Seguir</span></button>
+        <button class="walk__arrow walk__arrow--prev" type="button" id="walk-prev" hidden><span class="walk__ring" aria-hidden="true"></span><span class="walk__label" id="walk-prev-label">Voltar</span></button>
+      </div>
+      <p class="tour__hint" id="tour-hint" role="status">Arraste para olhar em volta</p>
+      <div class="tour__tools" role="group" aria-label="Controles do tour">
+        <button type="button" class="tool" id="tour-prev" aria-label="Cômodo anterior (roda para cima)">↑</button>
+        <button type="button" class="tool" id="tour-next" aria-label="Próximo cômodo (roda para baixo)">↓</button>
+        <button type="button" class="tool" id="tour-zoom-out" aria-label="Afastar">−</button>
+        <button type="button" class="tool" id="tour-zoom-in" aria-label="Aproximar">+</button>
+        <button type="button" class="tool" id="tour-rotate" aria-pressed="true" aria-label="Rotação automática">⟳</button>
+        <button type="button" class="tool" id="tour-full" aria-label="Tela cheia">⛶</button>
+      </div>
+      <div class="tour__rooms" id="tour-rooms" role="group" aria-label="Cômodos"></div>
+    </dialog>
+
+    <noscript><p class="noscript">O tour 360° precisa de JavaScript.</p></noscript>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
